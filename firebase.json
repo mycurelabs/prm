@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "siteId": "mycure-prm",
+    "target": "production",
     "public": "dist/spa",
     "ignore": [
       "firebase.json",
