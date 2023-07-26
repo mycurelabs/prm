@@ -4,18 +4,20 @@
 name: Deploy to Firebase Hosting on merge
 "on":
   push:
-    tags:
-      - v*
+    branches:
+      - main
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Install Yarn
+        run: npm install yarn@latest -g
       - name: Install Firebase Tools
         run: npm install firebase-tools@~9.23.3 -g
       - name: Install Dependencies
-        run: npm run install
+        run: yarn
       - name: Run Build
-        run: npm run build
+        run: yarn build
       - uses: actions/checkout@v2
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
