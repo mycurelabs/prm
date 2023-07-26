@@ -5,7 +5,7 @@ q-dialog(v-model="groupsDialog" persistent)
       div.row.q-mb-md
         div.column
           span.text-h6 Select group
-          span.text-caption.text-grey-6 Select group to add
+          span.text-caption.text-grey-6 Select a group to add
         q-space
         div
           q-btn(dense flat round icon="mdi-close" @click="onCloseGroupsDialog")
