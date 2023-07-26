@@ -6,8 +6,8 @@
   "author": "John Leonard Tubig <tubig.jlu@gmail.com>",
   "private": true,
   "scripts": {
-    "dev": "quasar dev",
-    "build": "quasar build",
+    "dev": "quasar dev --mode spa",
+    "build": "quasar build --mode spa",
     "lint": "eslint --fix --ext .js,.vue ./"
   },
   "dependencies": {
