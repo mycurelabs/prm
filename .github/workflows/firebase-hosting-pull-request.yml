@@ -22,7 +22,6 @@ jobs:
         run: yarn
       - name: Run Build
         run: yarn build
-      - uses: actions/checkout@v2
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
