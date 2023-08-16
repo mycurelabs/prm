@@ -20,8 +20,9 @@ jobs:
         run: npm install firebase-tools@~9.23.3 -g
       - name: Install Dependencies
         run: yarn
-      - name: Run Build
-        env:
+      - name: Create env file
+        run: |
+          cat <<EOF > ./.env
           API_BASE_URL: https://api.staging.mycure.md
           APP_LINK_CMS_APP: https://twitter.com/mycuremd
           APP_LINK_SUPPORT_PAGE: https://mycure.help
@@ -30,6 +31,8 @@ jobs:
           APP_LINK_TWITTER: https://twitter.com/mycureapp
           APP_LINK_INSTAGRAM: https://www.instagram.com/mycure.md
           APP_LINK_YOUTUBE: https://www.youtube.com/@mycure9489
+          EOF
+      - name: Run Build
         run: yarn build
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
