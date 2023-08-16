@@ -62,19 +62,8 @@ module.exports = configure(function (ctx) {
       // publicPath: '/',
       // analyze: true,
       env: {
+        ...require('dotenv').config().parsed,
         APP_VERSION: pkg.version,
-        API_BASE_URL: process.env.API_BASE_URL || ctx.dev
-          ? 'https://api.staging.mycure.md'
-          : 'https://api.mycure.md',
-        APP_LINK_CMS_APP: process.env.APP_LINK_CMS_APP || ctx.dev
-          ? 'https://staging-web-cms.web.app'
-          : 'https://cms.mycure.md',
-        APP_LINK_SUPPORT_PAGE: process.env.APP_LINK_SUPPORT_PAGE || 'https://mycure.help',
-        APP_LINK_FACEBOOK: process.env.APP_LINK_FACEBOOK || 'https://facebook.com/mycure',
-        APP_LINK_LINKEDIN: process.env.APP_LINK_LINKEDIN || 'https://linkedin.com/mycure',
-        APP_LINK_TWITTER: process.env.APP_LINK_TWITTER || 'https://twitter.com/mycure',
-        APP_LINK_INSTAGRAM: process.env.APP_LINK_INSTAGRAM || 'https://instagram.com/mycure',
-        APP_LINK_YOUTUBE: process.env.APP_LINK_YOUTUBE || 'https://youtube.com/mycure',
       },
       // rawDefine: {}
       // ignorePublicFolder: true,
