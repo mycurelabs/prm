@@ -8,6 +8,9 @@
 // Configuration for your app
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
 
+const env = require('dotenv').config().parsed;
+console.warn('env', env);
+
 const pkg = require('./package.json');
 const { configure } = require('quasar/wrappers');
 
@@ -62,7 +65,7 @@ module.exports = configure(function (ctx) {
       // publicPath: '/',
       // analyze: true,
       env: {
-        ...require('dotenv').config().parsed,
+        ...env,
         APP_VERSION: pkg.version,
       },
       // rawDefine: {}
