@@ -7,6 +7,9 @@
       "hosting": {
         "production": [
           "mycure-prm"
+        ],
+        "staging": [
+          "mycure-prm-staging"
         ]
       }
     }
