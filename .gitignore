@@ -36,3 +36,5 @@ yarn-error.log*
 # Envs
 /.full/.env
 /.module-*/.env
+.env
+.env.*
