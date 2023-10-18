@@ -67,6 +67,9 @@ module.exports = configure(function (ctx) {
       env: {
         ...env,
         APP_VERSION: pkg.version,
+        API_BASE_URL: ctx.dev
+          ? 'https://api.staging.mycure.md'
+          : 'https://api.mycure.md',
       },
       // rawDefine: {}
       // ignorePublicFolder: true,
