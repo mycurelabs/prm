@@ -121,6 +121,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    isEditing: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: [
     'cancel',

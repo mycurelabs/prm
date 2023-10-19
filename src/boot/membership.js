@@ -46,7 +46,7 @@ export function decorateSdk (sdk) {
             service: 'organizations',
             localKey: 'organization',
             foreignKey: 'id',
-            $select: ['id', 'type', 'picURL', 'name', 'description'],
+            $select: ['id', 'type', 'picURL', 'name', 'description', 'email'],
           },
         },
       };
@@ -72,6 +72,7 @@ export function decorateSdk (sdk) {
           name: membership.organization.name,
           picURL: membership.organization.picURL,
           description: membership.organization.description,
+          email: membership.organization.email,
         },
       };
       globalThis.localStorage.setItem(STORAGE_KEY_LAST_MEMBERSHIP, membership.id);

@@ -16,6 +16,7 @@ export function fetchProvider (type, opts) {
     id: `system-${type}`,
     type: 'sms',
     label: `MYCURE ${type} provider`,
+    defaultFrom: 'hello@mycure.md',
     isSystemProvider: true,
     creditsCount: 0,
   });
@@ -25,6 +26,10 @@ export function fetchProvider (type, opts) {
     if (!provider) return provider;
     if (provider.backendConfig) {
       provider.backendConfig = provider.backendConfig[provider.backend];
+    }
+    if (provider.emailConfig) {
+      provider.defaultFrom = provider.emailConfig?.['defaultFrom']?.email;
+      provider.defaultReplyTo = provider.emailConfig?.['defaultReplyTo']?.email;
     }
     return provider;
   };
@@ -101,6 +106,7 @@ export function fetchProvider (type, opts) {
     loading,
     provider,
     fetchProvider,
+    fetchSystemProvider,
     createProvider,
     deleteProvider,
     topupProvider,
