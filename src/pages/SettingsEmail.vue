@@ -26,7 +26,7 @@ q-card(bordered flat)
       div.col-xs-12.col-sm-6
         q-card(bordered flat style="height:180px;").bg-grey-1.text-grey
           q-card-section.row.items-start.q-pl-xs.q-pt-md.q-pr-md
-            q-radio().q-pr-md
+            q-radio(v-model="selected" val="system").q-pr-md
             div.column.q-pt-xs
               q-avatar(rounded size="lg" :style="{ width: '50px' }").bg-white
                   q-img(src="../assets/logo.png" :style="{ width: '50%' }")
@@ -46,21 +46,29 @@ q-card(bordered flat)
 
       div.col-xs-12.col-sm-6
         q-card(bordered flat style="height:180px;").bg-blue-1.text-primary
-          q-card-section.row.items-start
-            div.column
-              span.text-h6 {{ provider.label }}
-              span.text-subtitle1.text-grey-6 {{ provider.backend }}
+          q-card-section.row.items-start.q-pl-xs.q-pt-md.q-pr-md
+            q-radio(v-model="selected" val="custom_provider").q-pr-md
+            div.column.q-pt-xs
+              q-avatar(rounded size="lg" :style="{ width: '50px' }").bg-white
+                q-img(v-if="provider.backend === 'sendgrid'" src="../assets/sendgrid-logo.svg" :style="{ width: '50%' }")
+                q-img(v-else-if="provider.backend === 'globelabs'" src="../assets/globe-labs-logo.jpeg" :style="{ width: '50%' }")
+                q-img(v-else-if="provider.backend === 'twilio'" src="../assets/twilio-logo.png" :style="{ width: '50%' }")
+                q-img(v-else src="../assets/logo.png" :style="{ width: '50%' }")
+              span.text-h6.text-weight-bolder {{ provider.label }}
+              span.text-body2.text-weight-medium {{ provider.defaultFrom || provider.backend }}
             q-space
             div.row.items-center
-              q-btn(
-                dense
-                round
-                flat
-                icon="mdi-delete"
-                color="negative"
-                @click="onDelete(provider)"
-              )
-                q-tooltip Delete this custom provider
+              q-btn(flat unelevated dense icon="mdi-dots-vertical" size="md")
+                q-menu(:offset="[185,0]")
+                  q-list( :style="{'min-width': '220px'}")
+                    q-item(clickable v-close-popup @click="onCreateBtnClick(true)")
+                      q-item-section Edit
+                    q-item(clickable v-close-popup @click="onDelete(provider)")
+                      q-item-section Delete
+          q-card-section.row.items-center.q-pr-md
+            span.subtitle2.text-grey {{ provider?.creditsCount || '0' }} Credits
+            q-space
+            q-btn(flat unelevated dense no-caps type="a") Buy more credits
 
   // system provider
   template(v-else)
@@ -68,7 +76,7 @@ q-card(bordered flat)
       div.col-xs-12.col-sm-6
         q-card(bordered flat style="height:180px;").bg-blue-1.text-primary
           q-card-section.row.items-start.q-pl-xs.q-pt-md.q-pr-md
-            q-radio.q-pr-md
+            q-radio(v-model="selected" val="system").q-pr-md
             div.column.q-pt-xs
               q-avatar(rounded size="lg" :style="{ width: '50px' }").bg-white
                 q-img(src="../assets/logo.png" :style="{ width: '50%' }")
@@ -112,7 +120,7 @@ q-card(bordered flat)
 
 <script>
 import EmailProviderForm from 'components/EmailProviderForm.vue';
-import { ref } from 'vue';
+import { ref, onMounted, watch, toRef } from 'vue';
 import { fetchProvider } from 'boot/providers';
 import { handleAction } from 'boot/helpers';
 
@@ -125,6 +133,7 @@ export default {
     // data
     const dataset = fetchProvider('email');
     const systemDataset = dataset.fetchSystemProvider();
+    const selected = ref(null)
 
     // actions
     const createDialog = ref(false);
@@ -151,10 +160,20 @@ export default {
       confirmMessage: item => `Would you like to delete ${item.label} provider? This action cannot be reversed`,
     });
 
+    onMounted(() => {
+      if (dataset.provider.backend !== 'system') {
+        selected.value = 'custom_provider';
+      } else {
+        selected.value = 'system';
+      }
+    })
+
+
     return {
       loading: dataset.loading,
       provider: dataset.provider,
       systemProvider: systemDataset.provider,
+      selected,
 
       createDialog,
       onCreateBtnClick,
