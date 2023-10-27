@@ -10,6 +10,13 @@ div.row.q-mb-md
     span.text-h6 Select Email Provider
     span.text-caption.text-grey-6 Manage your Email providers here
 
+// set credit amount
+q-dialog(v-model="creditsDialog" persistent)
+  credit-purchase-dialog(
+    @close="creditsDialog = false"
+    @purchase="processPurchase"
+  )
+
 // providers
 q-card(bordered flat)
   // loading
@@ -42,7 +49,7 @@ q-card(bordered flat)
           q-card-section.row.items-center.q-pr-md
             span.subtitle2.text-grey {{ systemProvider?.creditsCount || '0' }} Credits
             q-space
-            q-btn(flat unelevated dense no-caps type="a") Buy more credits
+            q-btn(flat unelevated dense no-caps type="a" disabled) Buy more credits
 
       div.col-xs-12.col-sm-6
         q-card(bordered flat style="height:180px;").bg-blue-1.text-primary
@@ -65,6 +72,7 @@ q-card(bordered flat)
                       q-item-section Edit
                     q-item(clickable v-close-popup @click="onDelete(provider)")
                       q-item-section Delete
+                        //- q-icon(name="mdi-delete" color="negative")
           q-card-section.row.items-center.q-pr-md
             span.subtitle2.text-grey {{ provider?.creditsCount || '0' }} Credits
             q-space
@@ -81,7 +89,7 @@ q-card(bordered flat)
               q-avatar(rounded size="lg" :style="{ width: '50px' }").bg-white
                 q-img(src="../assets/logo.png" :style="{ width: '50%' }")
               span.text-h6 MYCURE Email provider
-              span.text-body2.text-weight-medium {{ systemProvider?.defaultFrom }}
+              span.text-body2.text-weight-medium {{ systemProvider?.defaultFrom || 'hello@mycure.md' }}
               //- span.text-subtitle1.text-grey-6 This is a backend provided by the system if you have enough credits
             q-space
             q-btn(flat unelevated dense icon="mdi-dots-vertical" disabled size="md")
@@ -93,7 +101,7 @@ q-card(bordered flat)
           q-card-section.row.items-center.q-pr-md
             span.subtitle2.text-grey {{ provider.creditsCount }} Credits
             q-space
-            q-btn(flat unelevated dense no-caps type="a") Buy more credits
+            q-btn(flat unelevated dense no-caps type="a" @click.stop="openCreditsDialog") Buy more credits
             // div
               q-btn(
                 no-caps
@@ -120,6 +128,7 @@ q-card(bordered flat)
 
 <script>
 import EmailProviderForm from 'components/EmailProviderForm.vue';
+import CreditPurchaseDialog from 'components/CreditPurchaseDialog.vue';
 import { ref, onMounted, watch, toRef } from 'vue';
 import { fetchProvider } from 'boot/providers';
 import { handleAction } from 'boot/helpers';
@@ -127,6 +136,7 @@ import { handleAction } from 'boot/helpers';
 export default {
   name: 'SettingsEmail',
   components: {
+    CreditPurchaseDialog,
     EmailProviderForm,
   },
   setup () {
@@ -137,6 +147,7 @@ export default {
 
     // actions
     const createDialog = ref(false);
+    const creditsDialog = ref(false);
     const onCreateBtnClick = () => {
       createDialog.value = true;
     };
@@ -161,6 +172,7 @@ export default {
     });
 
     onMounted(() => {
+      console.warn('DATASET-PROVIDER', dataset.provider)
       if (dataset.provider.backend !== 'system') {
         selected.value = 'custom_provider';
       } else {
@@ -168,6 +180,13 @@ export default {
       }
     })
 
+    const openCreditsDialog = () => {
+      creditsDialog.value = true;
+    }
+    const processPurchase = (creditsForPurchase) => {
+      const topupProvider = dataset.topupProvider;
+      topupProvider('email', creditsForPurchase.value);
+    }
 
     return {
       loading: dataset.loading,
@@ -176,11 +195,14 @@ export default {
       selected,
 
       createDialog,
+      creditsDialog,
       onCreateBtnClick,
       onEditBtnClick,
       onCreateCancel,
       onCreate,
       onDelete,
+      openCreditsDialog,
+      processPurchase,
     };
   },
 };

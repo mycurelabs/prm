@@ -10,6 +10,14 @@ div.row.q-mb-md
     span.text-h6 Configure SMS Provider
     span.text-caption.text-grey-6 Manage your SMS providers here
 
+// set credit amount
+q-dialog(v-model="creditsDialog" persistent)
+  credit-purchase-dialog(
+    @close="creditsDialog = false"
+    @purchase="processPurchase"
+  )
+
+
 // providers
 q-card(bordered flat)
   // loading
@@ -20,7 +28,9 @@ q-card(bordered flat)
       div.col-xs-12.col-sm-6
         q-skeleton(height="200px" square)
 
-  // custom provider
+
+
+  // custom provider / open provider
   template(v-else-if="!provider.isSystemProvider")
     q-card-section.row.q-col-gutter-md
       div.col-xs-12.col-sm-6
@@ -41,7 +51,7 @@ q-card(bordered flat)
           q-card-section.row.items-center.q-pr-md
             span.subtitle2.text-grey {{ systemProvider?.creditsCount || '0' }} Credits
             q-space
-            q-btn(flat unelevated dense no-caps type="a") Buy more credits
+            q-btn(flat unelevated dense no-caps type="a" disabled @click.stop="openCreditsDialog") Buy more credits
 
       div.col-xs-12.col-sm-6
         q-card(bordered flat style="height:180px;").bg-blue-1.text-primary
@@ -64,7 +74,16 @@ q-card(bordered flat)
                       q-item-section Edit
                     q-item(clickable v-close-popup @click="onDelete(provider)")
                       q-item-section Delete
-          q-card-section.row.items-center.q-pr-md
+              //- q-btn(
+              //-   dense
+              //-   round
+              //-   flat
+              //-   icon="mdi-delete"
+              //-   color="negative"
+              //-   @click="onDelete(provider)"
+              //- )
+              //-   q-tooltip Delete this custom provider
+          //- q-card-section.row.items-center.q-pr-md
             span.subtitle2.text-grey {{ provider?.creditsCount || '0' }} Credits
             q-space
             q-btn(flat unelevated dense no-caps type="a") Buy more credits
@@ -80,7 +99,7 @@ q-card(bordered flat)
               q-avatar(rounded size="lg" :style="{ width: '50px' }").bg-white
                 q-img(src="../assets/logo.png" :style="{ width: '50%' }")
               span.text-h6.text-weight-bolder MYCURE SMS provider
-              span.text-body2.text-weight-medium {{ provider?.defaultFrom }}
+              span.text-body2.text-weight-medium {{ provider?.senderNo || provider?.defaultFrom }}
               //- span.text-subtitle1.text-grey-6 This is a backend provided by the system if you have enough credits
             q-space
             //- q-btn(icon="mdi-dots-vertical" size="sm" disabled @click="onCreateBtnClick(true)")
@@ -92,7 +111,7 @@ q-card(bordered flat)
           q-card-section.row.items-center.q-pr-md
             span.subtitle2.text-grey {{ provider?.creditsCount }} Credits
             q-space
-            q-btn(flat unelevated dense no-caps type="a") Buy more credits
+            q-btn(flat unelevated dense no-caps type="a" @click.stop="openCreditsDialog") Buy more credits
             // div
               q-btn(
                 no-caps
@@ -119,6 +138,7 @@ q-card(bordered flat)
 
 <script>
 import SmsProviderForm from 'components/SMSProviderForm.vue';
+import CreditPurchaseDialog from 'components/CreditPurchaseDialog.vue';
 import { ref, onMounted, watch } from 'vue';
 import { fetchProvider } from 'boot/providers';
 import { handleAction } from 'boot/helpers';
@@ -126,12 +146,14 @@ import { handleAction } from 'boot/helpers';
 export default {
   name: 'SettingsSMS',
   components: {
+    CreditPurchaseDialog,
     SmsProviderForm,
   },
   setup () {
     // data
     const dataset = fetchProvider('sms');
     const systemDataset = dataset.fetchSystemProvider();
+    const subscription = dataset.subscription;
     const selected = ref(null)
 
     onMounted(() => {
@@ -140,10 +162,12 @@ export default {
       } else {
         selected.value = 'system';
       }
+      console.warn('SUBSCRIPTION-LOADED', subscription);
     })
 
     // actions
     const createDialog = ref(false);
+    const creditsDialog = ref(false);
     const onCreateBtnClick = (isEditing) => {
       createDialog.value = true;
     };
@@ -163,6 +187,13 @@ export default {
       loaderMessage: item => `Deleting ${item.label} provider...`,
       confirmMessage: item => `Would you like to delete ${item.label} provider? This action cannot be reversed`,
     });
+    const openCreditsDialog = () => {
+      creditsDialog.value = true;
+    }
+    const processPurchase = (creditsForPurchase) => {
+      const topupProvider = dataset.topupProvider;
+      topupProvider('sms', creditsForPurchase.value);
+    }
 
     return {
       loading: dataset.loading,
@@ -171,10 +202,13 @@ export default {
       selected,
 
       createDialog,
+      creditsDialog,
       onCreateBtnClick,
       onCreateCancel,
       onCreate,
       onDelete,
+      openCreditsDialog,
+      processPurchase,
     };
   },
 };
