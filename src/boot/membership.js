@@ -127,6 +127,15 @@ export function useActiveMembership () {
   return sdk.activeMembership$;
 }
 
+// export async function getMembershipDetails () {
+//   const sdk = useSdk();
+//   const activeMembership = useActiveMembership();
+//   const res = await sdk.get('organizations', {
+//     facility: activeMembership.value.id
+//   });
+//   return res
+// }
+
 export function useMemberships (opts) {
   // extract sdk
   const sdk = useSdk();

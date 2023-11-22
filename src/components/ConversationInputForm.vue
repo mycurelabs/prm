@@ -1,4 +1,11 @@
 <template lang="pug">
+// set credit amount
+q-dialog(v-model="creditsDialog" persistent)
+  credit-purchase-dialog(
+    @close="creditsDialog = false"
+    @purchase="processPurchase"
+  )
+
 q-dialog(v-model="useTemplateDialog" persistent)
   q-card(style="width: 500px;")
     q-card-section.column.q-pb-none
@@ -79,6 +86,16 @@ q-card(flat)
       q-btn(
         unelevated
         no-caps
+        color="primary"
+        @click="openCreditsDialog"
+      )
+        div.row.q-px-xs.items-center.q-gutter-xs
+          q-avatar(rounded size="mg" :style="{ width: '25px', height: '25px' }").bg-white
+            q-img(src="../assets/logo.png" :style="{ width: '25px', height: '25px' }")
+          span {{ creditsCount || 'NaN' }} credits left
+      q-btn(
+        unelevated
+        no-caps
         icon="mdi-bookmark"
         color="warning"
         @click="onOpenTemplateDialog"
@@ -100,12 +117,17 @@ q-card(flat)
 </template>
 
 <script>
+import CreditPurchaseDialog from 'components/CreditPurchaseDialog.vue';
 import { useQuasar } from 'quasar';
 import { ref, toRef, computed, watch } from 'vue';
 import { MESSAGE_TYPES } from 'boot/conversations';
+import { fetchProvider } from 'boot/providers';
 
 export default {
   name: 'ConversationInputForm',
+  components: {
+    CreditPurchaseDialog,
+  },
   props: {
     types: {
       type: Array,
@@ -133,12 +155,23 @@ export default {
     const $q = useQuasar();
     const types = toRef(props, 'types');
     const conversation = toRef(props, 'conversation');
+    const dataset = ref(null);
+    const creditsDialog = ref(false);
+    const creditsCount = ref(0);
 
     const type = ref(null);
     watch(types, (types) => {
       type.value = types[0];
+      const keyType = type.value?.key;
+      dataset.value = fetchProvider(keyType)
     }, { immediate: true });
-    watch(type, type => ctx.emit('update:type', type));
+    watch(type, (type) => {
+      creditsCount.value = dataset.value?.provider?.creditsCount;
+      ctx.emit('update:type', type)
+    }, { immediate: true });
+    watch(dataset, (data) => {
+      creditsCount.value = dataset.value?.provider?.creditsCount;
+    }, { immediate: true })
 
     const subject = ref(null);
     const subjectRules = computed(() => [
@@ -189,6 +222,14 @@ export default {
       body.value = item.body;
     };
 
+    const openCreditsDialog = () => {
+      creditsDialog.value = true;
+    }
+    const processPurchase = (creditsForPurchase) => {
+      const topupProvider = dataset.value.topupProvider;
+      topupProvider('email', creditsForPurchase.value);
+    }
+
     return {
       type,
       subject,
@@ -196,12 +237,17 @@ export default {
       template,
       body,
       bodyRules,
+      creditsDialog,
+      creditsCount,
+
       onReset,
       onSend,
       useTemplateDialog,
       onOpenTemplateDialog,
       onCloseTemplateDialog,
       onUseTemplate,
+      openCreditsDialog,
+      processPurchase
     };
   },
 };

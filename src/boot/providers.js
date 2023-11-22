@@ -16,7 +16,7 @@ export function fetchProvider (type, opts) {
   // default 0-credit system provider
   const defaultSystemProvider = deepFreeze({
     id: `system-${type}`,
-    type: 'sms',
+    type: `${type}`,
     label: `MYCURE ${type} provider`,
     defaultFrom: 'hello@mycure.md',
     senderNo: '+12017482119',

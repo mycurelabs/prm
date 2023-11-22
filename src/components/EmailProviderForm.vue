@@ -2,8 +2,8 @@
 q-card(style="width:400px;")
   q-card-section.row
     div.column
-      span.text-h6 Add provider
-      span.text-caption.text-grey-6 Add a provider for your Email
+      span.text-h6 {{ isEditing ? 'Edit Email Provider' : 'Add Provider' }}
+      span.text-caption.text-grey-6 {{ isEditing ? 'Edit the details of this Email Provider' : 'Add a provider for your Email' }}
     q-space
     template(v-if="dialog")
       div
@@ -11,6 +11,7 @@ q-card(style="width:400px;")
   q-form(@submit="onSave" @reset="onReset")
     q-card-section
       q-select(
+        v-if="!isEditing"
         dense
         outlined
         hide-bottom-space
@@ -53,6 +54,7 @@ q-card(style="width:400px;")
       q-separator
       q-card-section
         q-input(
+          v-if="!isEditing"
           dense
           outlined
           hide-bottom-space

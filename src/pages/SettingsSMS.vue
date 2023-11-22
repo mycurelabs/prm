@@ -162,7 +162,6 @@ export default {
       } else {
         selected.value = 'system';
       }
-      console.warn('SUBSCRIPTION-LOADED', subscription);
     })
 
     // actions

@@ -1,12 +1,12 @@
 <template lang="pug">
 q-card(style="width:700px;")
   q-card-section.row
-    div.column
+    div.column.col-10
       span.text-h6 Add Workflow
-      span.text-caption.text-grey-6 Add a workflow
+      span.text-caption.text-grey-6 Our PRM allows you to create and manage custom automation sequences, streamlining patient care and administrative tasks.
     q-space
     template(v-if="dialog")
-      div
+      div.column
         q-btn(dense flat round icon="mdi-close" @click="onCancel")
   q-form(@submit="onSave" @reset="onReset")
     q-card-section(style="max-height: 50vh").scroll
