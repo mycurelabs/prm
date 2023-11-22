@@ -2,7 +2,7 @@
 q-card(style="width:400px;")
   q-card-section.row
     div.column
-      span.text-h6 Add provider
+      span.text-h6 {{ isEditing ? 'Edit SMS Provider' : 'Add Provider' }}
       span.text-caption.text-grey-6 Add a provider for your SMS
     q-space
     template(v-if="dialog")
@@ -113,11 +113,16 @@ q-card(style="width:400px;")
 
 <script>
 import { ref, computed, watch } from 'vue';
+import { useActiveMembership } from 'boot/membership.js';
 
 export default {
   name: 'SMSProviderForm',
   props: {
     dialog: {
+      type: Boolean,
+      default: false,
+    },
+    isEditing: {
       type: Boolean,
       default: false,
     },
@@ -131,6 +136,8 @@ export default {
     const labelRules = [
       v => !!v || 'Label is required',
     ];
+    const organization = useActiveMembership();
+    console.log('org-dets', organization);
 
     const backendOptions = [
       'twilio',
